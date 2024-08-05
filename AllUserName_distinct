@@ -1,0 +1,47 @@
+SELECT 
+    DISTINCT us.UserName AS UserDistinct
+FROM 
+    [ReportServer].[dbo].[Users] us
+JOIN 
+    [ReportServer].[dbo].[PolicyUserRole] pol ON us.UserID = pol.UserID 
+JOIN 
+    [ReportServer].[dbo].[Roles] rol ON pol.RoleID = rol.RoleID;
+
+   -- all user name that have access to powerbi report server
+
+SELECT 	rol.RoleName,
+		COUNT(us.UserID) AS UserCount
+FROM
+	[ReportServer].[dbo].[Users] us
+JOIN
+	[ReportServer].[dbo].[PolicyUserRole] pol
+	ON us.UserID = pol.UserID
+JOIN [ReportServer].[dbo].[Roles] rol
+	ON pol.RoleID = rol.RoleID 
+GROUP BY
+rol.RoleName;
+-- the number of user based on role
+
+SELECT 
+    DISTINCT us.UserName AS UserDistinct
+FROM 
+    [ReportServer].[dbo].[Users] us
+JOIN 
+    [ReportServer].[dbo].[PolicyUserRole] pol ON us.UserID = pol.UserID 
+JOIN 
+    [ReportServer].[dbo].[Roles] rol ON pol.RoleID = rol.RoleID;
+
+   -- all user name that have access to powerbi report server
+
+
+SELECT 
+    COUNT(DISTINCT us.UserID) AS DistinctUserCount
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[PolicyUserRole] pol ON us.UserID = pol.UserID
+JOIN 
+    [ReportServer].[dbo].[Roles] rol ON pol.RoleID = rol.RoleID;
+-- the number of distinct user (different people)
+
+

@@ -1,0 +1,11 @@
+SELECT 	rol.RoleName,
+		COUNT(us.UserID) AS UserCount
+FROM
+	[ReportServer].[dbo].[Users] us
+JOIN
+	[ReportServer].[dbo].[PolicyUserRole] pol
+	ON us.UserID = pol.UserID
+JOIN [ReportServer].[dbo].[Roles] rol
+	ON pol.RoleID = rol.RoleID 
+GROUP BY
+rol.RoleName;

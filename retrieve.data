@@ -1,0 +1,32 @@
+-- query that retrieves basic information about Power BI reports
+SELECT 
+    c.ItemID,
+    c.Name AS ReportName,
+    c.Path AS ReportPath,
+    c.CreationDate,
+    c.ModifiedDate,
+    u.UserName AS ModifiedBy
+FROM 
+    ReportServer.dbo.Catalog c
+JOIN 
+    ReportServer.dbo.Users u ON c.ModifiedByID = u.UserID
+WHERE 
+    c.Type = 13; -- Type 13 indicates Power BI reports
+
+-- you can change the schema.table.column col into [scheme][table][column] col
+-- for msql report server
+
+SELECT 
+	cat.ItemID, -- ID for Power BI Report Server Dashboard
+	cat.Name AS ReportName,
+	cat.Path AS ReportPath, -- Data Source/Location
+	cat.CreationDate,
+	cat.ModifiedDate AS LastAccess,
+	us.UserName AS ModifiedBy
+FROM
+	[ReportServer].[dbo].[Catalog] cat 
+JOIN
+	[ReportServer].[dbo].[Users] us ON
+cat.ModifiedByID = us.UserID
+WHERE 
+	cat.Type = 13; -- Type 13 indicates Power BI reports

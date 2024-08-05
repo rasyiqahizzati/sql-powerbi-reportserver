@@ -1,0 +1,16 @@
+-- user list and their roles
+SELECT 
+    us.UserName, 
+    rol.RoleName,
+    cat.Name AS ReportName,
+    cat.Path AS ReportPath
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[PolicyUserRole] pol ON us.UserID = pol.UserID
+LEFT JOIN 
+    [ReportServer].[dbo].[Roles] rol ON pol.RoleID = rol.RoleID
+JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON pol.PolicyID = cat.PolicyID
+WHERE 
+    cat.Type = 13 ;-- Type 13 indicates Power BI reports
