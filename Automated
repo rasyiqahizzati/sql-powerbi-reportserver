@@ -1,0 +1,52 @@
+-- To automate the check for Power BI reports that haven’t been modified in the last year, you can set up a scheduled SQL job in SQL Server. Here’s a step-by-step guide to help you do this:
+
+-- Step 1: Create a Stored Procedure
+-- First, create a stored procedure that encapsulates the query to find non-modified reports.
+
+
+CREATE PROCEDURE CheckNonModifiedReports
+AS
+BEGIN
+    SELECT 
+        cat.ItemID,
+        cat.Name AS ReportName,
+        cat.ModifiedDate AS LastModified
+    FROM 
+        [ReportServer].[dbo].[Catalog] cat
+    WHERE 
+        cat.Type = 13 -- Power BI reports
+        AND cat.ModifiedDate < DATEADD(YEAR, -1, GETDATE())
+    ORDER BY 
+        cat.ModifiedDate DESC;
+END
+
+-- Step 2: Set Up a SQL Server Agent Job
+-- Open SQL Server Management Studio (SSMS).
+-- Connect to your SQL Server instance.
+-- Expand the SQL Server Agent node.
+-- Right-click Jobs and select New Job.
+-- Step 3: Configure the Job
+-- Name the Job: Give your job a meaningful name, like “Check Non-Modified Power BI Reports”.
+-- Steps:
+-- Click on the Steps page.
+-- Click New to create a new step.
+-- Name the step, e.g., “Execute CheckNonModifiedReports”.
+-- Set the Type to “Transact-SQL script (T-SQL)”.
+
+EXEC CheckNonModifiedReports;
+
+-- Step 4: Schedule the Job
+-- Schedules:
+-- Click on the Schedules page.
+-- Click New to create a new schedule.
+-- Name the schedule, e.g., “Daily Check”.
+-- Set the frequency to your desired interval (e.g., daily, weekly).
+-- Click OK.
+-- Step 5: Notifications (Optional)
+-- Notifications:
+-- Click on the Notifications page.
+-- Set up email notifications or alerts if you want to be notified when the job completes or fails.
+-- Step 6: Save and Enable the Job
+-- Save: Click OK to save the job.
+-- Enable: Ensure the job is enabled and will run according to the schedule.
+-- This setup will automate the process of checking for Power BI reports that haven’t been modified in the last year. You can review the results by querying the job history or setting up notifications.
