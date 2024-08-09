@@ -1,0 +1,25 @@
+-- script to identify and list the duplicated report name in report server
+SELECT
+    Name AS ReportName,
+    COUNT(*) AS DuplicateCount
+FROM 
+    [ReportServer].[dbo].[Catalog]
+GROUP BY 
+    Name
+HAVING 
+    COUNT(*) > 1
+ORDER BY 
+    DuplicateCount DESC;
+
+-- script to count the duplicated report name
+ SELECT
+    UserName,
+    COUNT(*) AS DuplicateCount
+FROM 
+    [ReportServer].[dbo].[Users]
+GROUP BY 
+    UserName
+HAVING 
+    COUNT(*) > 1
+ORDER BY 
+    DuplicateCount DESC;

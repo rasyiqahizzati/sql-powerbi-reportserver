@@ -1,0 +1,27 @@
+SELECT 
+    UserName,
+    Name AS ReportName,
+    COUNT(1) AS total_roles,
+    SUM(CASE WHEN RoleName = 'Browser' THEN 1 ELSE 0 END) AS BR,
+    SUM(CASE WHEN RoleName = 'Content Manager' THEN 1 ELSE 0 END) AS CM
+FROM 
+(
+    SELECT 
+        us.UserName,
+        cat.Name,
+        rol.RoleName
+    FROM 
+        [ReportServer].[dbo].[Users] us
+    LEFT JOIN 
+        [ReportServer].[dbo].[PolicyUserRole] pol ON us.UserID = pol.UserID
+    LEFT JOIN 
+        [ReportServer].[dbo].[Roles] rol ON pol.RoleID = rol.RoleID
+    JOIN 
+        [ReportServer].[dbo].[Catalog] cat ON pol.PolicyID = cat.PolicyID
+) AS sub
+GROUP BY 
+    UserName, 
+    Name
+ORDER BY 
+    UserName, 
+    Name DESC;

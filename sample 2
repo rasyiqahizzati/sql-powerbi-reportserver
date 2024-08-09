@@ -1,3 +1,0 @@
-SELECT column_1, sum(column_2), count(column_3) 
-FROM schema.table_name_1 t1
-GROUP BY column_1;

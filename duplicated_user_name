@@ -1,0 +1,14 @@
+select Username, count(1) from dbo.Users u
+group by Username
+having count(1) > 1;
+ 
+select * from dbo.Users u
+where UserName = 'MI3G\carmen.tay';
+ 
+select UserID, count(1) from dbo.PolicyUserRole pur
+group by UserID
+having count(1) > 1;
+ 
+select * from dbo.Roles r   --userid, roleid
+left join dbo.PolicyUserRole pur on pur.RoleID = r.RoleID
+where pur.UserID = '4E8F0814-9F0B-4422-BE26-7562D1B9DC17';

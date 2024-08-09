@@ -1,0 +1,76 @@
+-- Script to identify the non active reports in 6 months
+SELECT 
+    cat.ItemID,
+    cat.Name AS ReportName,
+    MAX(el.TimeStart) AS LastExecution
+FROM 
+    [ReportServer].[dbo].[Catalog] cat
+LEFT JOIN 
+    [ReportServer].[dbo].[ExecutionLogStorage] el ON cat.ItemID = el.ReportID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    cat.ItemID, cat.Name
+HAVING 
+    MAX(el.TimeStart) < DATEADD(MONTH, -6, GETDATE()) -- Reports not executed in the last 6 months
+ORDER BY LastExecution;
+
+--Script to identify the report that have not been modified more than 1 year 
+ SELECT 
+    cat.ItemID,
+    cat.Name AS ReportName,
+    cat.ModifiedDate AS LastModified
+FROM 
+    [ReportServer].[dbo].[Catalog] cat
+WHERE 
+    cat.Type = 13 -- Power BI reports
+    AND cat.ModifiedDate < DATEADD(YEAR, -1, GETDATE())
+ORDER BY 
+    cat.ModifiedDate DESC;
+
+-- Script that to extract the name and report that no longer modified anythings in 1 year 
+  SELECT 
+    us.UserName,
+    cat.Name AS ReportName,
+    cat.ModifiedDate AS LastModified
+FROM 
+    [ReportServer].[dbo].[Catalog] cat
+LEFT JOIN 
+    [ReportServer].[dbo].[Users] us ON cat.ModifiedByID = us.UserID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+    AND cat.ModifiedDate < DATEADD(YEAR, -1, GETDATE())
+ORDER BY 
+    us.UserName, cat.ModifiedDate DESC;
+
+
+ -- Script that idetify the report name and the user that no longer modified anythings in 1 year  
+   SELECT 
+   cat.Name AS ReportName,
+    us.UserName,
+    cat.ModifiedDate AS LastModified
+FROM 
+    [ReportServer].[dbo].[Catalog] cat
+LEFT JOIN 
+    [ReportServer].[dbo].[Users] us ON cat.ModifiedByID = us.UserID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+ORDER BY 
+    us.UserName, cat.Name;
+
+SELECT 
+    COUNT(*) AS InactiveReportCount
+FROM 
+    [ReportServer].[dbo].[Catalog] cat
+WHERE 
+    cat.Type = 13 -- Power BI reports
+    AND cat.ModifiedDate < DATEADD(YEAR, -1, GETDATE());
+   
+-- Script to count the active report count  
+SELECT 
+    COUNT(*) AS ActiveReportCount
+FROM 
+    [ReportServer].[dbo].[Catalog]
+WHERE 
+    Type = 13 -- Power BI reports
+    AND ModifiedDate >= DATEADD(YEAR, -1, GETDATE());

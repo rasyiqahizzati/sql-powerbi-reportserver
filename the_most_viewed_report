@@ -1,0 +1,27 @@
+--script to identify the most viewed power bi dashboard
+SELECT 
+    cat.Name AS ReportName,
+    COUNT(el.TimeStart) AS ViewCount
+FROM 
+    [ReportServer].[dbo].[Catalog] cat
+LEFT JOIN 
+    [ReportServer].[dbo].[ExecutionLogStorage] el ON cat.ItemID = el.ReportID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    cat.Name
+ORDER BY 
+    ViewCount DESC;
+
+--ASC (show 2018 the old one)
+   
+ SELECT 
+    cat.ItemID,
+    cat.Name AS ReportName,
+    cat.ModifiedDate AS LastModified
+FROM 
+    [ReportServer].[dbo].[Catalog] cat
+WHERE 
+    cat.Type = 13 -- Power BI reports
+ORDER BY 
+    cat.ModifiedDate ASC;

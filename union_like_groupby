@@ -1,3 +1,4 @@
+-- how to use UNION in SQL
 SELECT * FROM schema.table_name_1 t1
 JOIN schema. table_name_2 t2 ON t1.key = t2.key
 WHERE condition_1 IS NULL 
@@ -10,3 +11,13 @@ LEFT JOIN schema. table_name_3 t3 ON t1.key = t3.key
 WHERE condition_3 LIKE ‘%pattern%’
 OR condition_4 IS NOT NULL
 ORDER BY column_1;
+
+-- how to use GROUP BY
+SELECT column_1, sum(column_2), count(column_3) 
+FROM schema.table_name_1 t1
+GROUP BY column_1;
+
+-- how to use LIKE
+SELECT column1, column2, ...
+FROM table_name
+WHERE column LIKE '%data%';

@@ -1,0 +1,173 @@
+ -- Script 1
+ SELECT 
+    us.UserName,
+    MAX(cat.ModifiedDate) AS LastModified,
+    CASE 
+        WHEN MAX(cat.ModifiedDate) < DATEADD(YEAR, -1, GETDATE()) THEN 'No Access in Last Year'
+        ELSE 'Accessed in Last Year'
+    END AS AccessStatus
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    us.UserName
+ORDER BY 
+    us.UserName;
+
+-- Script 2
+SELECT 
+    us.UserName,
+    MAX(cat.ModifiedDate) AS LastModified,
+    CASE 
+        WHEN MAX(cat.ModifiedDate) < DATEADD(YEAR, -1, GETDATE()) THEN 'No Access in Last Year'
+        ELSE 'Accessed in Last Year'
+    END AS AccessStatus,
+    rol.RoleName
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+LEFT JOIN 
+    [ReportServer].[dbo].[Roles] rol ON us.UserID = rol.RoleID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    us.UserName,rol.RoleName
+ORDER BY 
+    us.UserName;
+
+--Script 3
+ SELECT 
+    us.UserName,
+    COUNT(cat.ItemID) AS ActivityCount
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    us.UserName
+ORDER BY 
+    ActivityCount DESC;
+   
+--Script 4
+SELECT 
+    us.UserName,
+    (SELECT COUNT(*) 
+     FROM [ReportServer].[dbo].[Catalog] cat 
+     WHERE cat.ModifiedByID = us.UserID 
+       AND cat.Type = 13 
+       AND YEAR(cat.ModifiedDate) = YEAR(GETDATE())) AS ActivityCountThisYear,
+    (SELECT COUNT(*) 
+     FROM [ReportServer].[dbo].[Catalog] cat 
+     WHERE cat.ModifiedByID = us.UserID 
+       AND cat.Type = 13 
+       AND YEAR(cat.ModifiedDate) = 2023) AS ActivityCount2023
+FROM 
+    [ReportServer].[dbo].[Users] us
+ORDER BY 
+    ActivityCountThisYear DESC, ActivityCount2023 DESC;
+   
+   SELECT 
+    DISTINCT COUNT(*) AS DashboardReportCount
+FROM 
+    [ReportServer].[dbo].[Catalog]
+WHERE 
+    Type = 13; -- Assuming Type 13 represents Power BI reports
+    
+-- Script 5    
+SELECT 
+    us.UserName,
+    COUNT(CASE WHEN YEAR(cat.ModifiedDate) = 2023 THEN 1 END) AS ActivityCount2023,
+    COUNT(CASE WHEN YEAR(cat.ModifiedDate) = 2024 THEN 1 END) AS ActivityCount2024
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    us.UserName
+ORDER BY 
+    ActivityCount2024 DESC, ActivityCount2023 DESC;
+
+-- Script 6
+ SELECT 
+    COUNT(DISTINCT us.UserName) AS ActiveUserCount
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+    AND cat.ModifiedDate >= DATEADD(YEAR, -1, GETDATE());
+   
+-- Script 6  
+ SELECT 
+    COUNT(DISTINCT us.UserName) AS InactiveUserCount
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+    AND cat.ModifiedDate < DATEADD(YEAR, -5, GETDATE())
+    AND us.UserID NOT IN (
+        SELECT DISTINCT cat.ModifiedByID
+        FROM [ReportServer].[dbo].[Catalog] cat
+        WHERE cat.Type = 13
+        AND cat.ModifiedDate >= DATEADD(YEAR, -5, GETDATE())
+    );
+
+-- Script 7
+SELECT 
+    us.UserName,
+    MAX(cat.ModifiedDate) AS LastModified
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    us.UserName
+HAVING 
+    MAX(cat.ModifiedDate) < DATEADD(YEAR, -3, GETDATE())
+ORDER BY 
+    us.UserName;
+
+--Sccript 8   
+SELECT 
+    us.UserName,
+    MAX(cat.ModifiedDate) AS LastModified,
+    CASE 
+        WHEN MAX(cat.ModifiedDate) < DATEADD(YEAR, -1, GETDATE()) THEN 'Inactive'
+        ELSE 'Active'
+    END AS AccessStatus
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+GROUP BY 
+    us.UserName
+HAVING 
+    MAX(cat.ModifiedDate) < DATEADD(YEAR, -2, GETDATE())
+ORDER BY 
+    us.UserName;
+
+-- Script 9
+SELECT 
+    COUNT(DISTINCT us.UserName) AS InactiveUserCount
+FROM 
+    [ReportServer].[dbo].[Users] us
+LEFT JOIN 
+    [ReportServer].[dbo].[Catalog] cat ON us.UserID = cat.ModifiedByID
+WHERE 
+    cat.Type = 13 -- Power BI reports
+    AND cat.ModifiedDate < DATEADD(YEAR, -2, GETDATE());

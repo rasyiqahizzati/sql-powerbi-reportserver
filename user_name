@@ -1,4 +1,4 @@
--- user list and their roles
+-- extract the list of user names and their roles
 SELECT 
     us.UserName, 
     rol.RoleName,
